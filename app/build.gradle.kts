@@ -49,6 +49,8 @@ dependencies {
     // Navigation and Icons
     implementation(libs.androidx.navigation.compose)
     implementation("androidx.compose.material:material-icons-extended")
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.material3)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

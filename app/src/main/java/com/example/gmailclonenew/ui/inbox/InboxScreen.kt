@@ -1,5 +1,8 @@
 package com.example.gmailclonenew.ui.inbox
 
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
+import androidx.compose.ui.graphics.Color
 import android.text.format.DateUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,18 +22,16 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Chat
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Mail
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.outlined.Groups
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material.icons.outlined.Videocam
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -47,6 +48,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.gmailclonenew.model.Email
+import com.example.gmailclonenew.ui.theme.GmailFabContainer
+import com.example.gmailclonenew.ui.theme.GmailFabContent
+import com.example.gmailclonenew.ui.theme.GmailSearchBarBg
+import com.example.gmailclonenew.ui.theme.GmailOnSurfaceVariant
+import com.example.gmailclonenew.ui.theme.GmailSurface
+import com.example.gmailclonenew.ui.theme.GmailRed
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -59,54 +66,49 @@ fun InboxScreen(
     Scaffold(
         topBar = {
             Column {
-                InboxTopAppBar()
+                InboxTopAppBar("R") // Example initial
                 Text(
-                    text = "INBOX",
-                    style = MaterialTheme.typography.labelSmall,
+                    text = "Inbox", // Matches lowercase style in some views
+                    style = MaterialTheme.typography.labelLarge,
                     modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 8.dp)
                 )
             }
         },
         floatingActionButton = {
-            FloatingActionButton(
+            ExtendedFloatingActionButton(
                 onClick = { /* TODO: Compose */ },
                 shape = RoundedCornerShape(16.dp),
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                containerColor = GmailFabContainer,
+                contentColor = GmailFabContent,
+                elevation = FloatingActionButtonDefaults.elevation(4.dp)
             ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(imageVector = Icons.Default.Edit, contentDescription = "Compose")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(text = "Compose")
-                }
+                Icon(imageVector = Icons.Default.Edit, contentDescription = null)
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(text = "Compose", fontWeight = FontWeight.Medium)
             }
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(containerColor = GmailSurface) { // Background color from Color.kt
                 NavigationBarItem(
                     selected = true,
-                    onClick = { /*TODO*/ },
-                    icon = { Icon(Icons.Filled.Mail, contentDescription = "Mail") },
+                    onClick = { /* TODO: Handle Mail click */ },
+                    icon = {
+                        // Implementing the red notification badge as shown in your image
+                        BadgedBox(
+                            badge = {
+                                Badge(containerColor = GmailRed) { // Brand red from Color.kt
+                                    Text("3", color = Color.White)
+                                }
+                            }
+                        ) {
+                            Icon(Icons.Filled.Mail, contentDescription = "Mail")
+                        }
+                    },
                     label = { Text("Mail") }
                 )
                 NavigationBarItem(
                     selected = false,
-                    onClick = { /*TODO*/ },
-                    icon = { Icon(Icons.AutoMirrored.Outlined.Chat, contentDescription = "Chat") },
-                    label = { Text("Chat") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /*TODO*/ },
-                    icon = { Icon(Icons.Outlined.Groups, contentDescription = "Spaces") },
-                    label = { Text("Spaces") }
-                )
-                NavigationBarItem(
-                    selected = false,
-                    onClick = { /*TODO*/ },
+                    onClick = { /* TODO: Handle Meet click */ },
                     icon = { Icon(Icons.Outlined.Videocam, contentDescription = "Meet") },
                     label = { Text("Meet") }
                 )
@@ -134,15 +136,17 @@ fun InboxScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun InboxTopAppBar() {
-    // This is a simplified representation of the Gmail search bar
+private fun InboxTopAppBar(userInitial: String = "R") { // Pass user initial here
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
             .height(56.dp),
         shape = RoundedCornerShape(28.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+        colors = CardDefaults.cardColors(
+            containerColor = GmailSearchBarBg
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Row(
             modifier = Modifier
@@ -150,33 +154,39 @@ private fun InboxTopAppBar() {
                 .padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = { /* TODO: Drawer */ }) {
+            IconButton(onClick = { /* Drawer */ }) {
                 Icon(
                     imageVector = Icons.Filled.Menu,
-                    contentDescription = "Menu"
+                    contentDescription = "Menu",
+                    tint = GmailOnSurfaceVariant
                 )
             }
             Text(
                 text = "Search in emails",
                 modifier = Modifier.weight(1f),
                 style = MaterialTheme.typography.bodyLarge,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = GmailOnSurfaceVariant
             )
-            IconButton(onClick = { /* TODO: Account */ }) {
-                // In a real app, you'd use an AsyncImage to load the user's profile picture
-                Icon(
-                    imageVector = Icons.Filled.AccountCircle,
-                    contentDescription = "Account",
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(CircleShape),
-                    tint = MaterialTheme.colorScheme.primary // Example color
+
+            // Profile Icon with first letter
+            Box(
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(Color(0xFF8BC34A)), // Light green matching the image
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = userInitial,
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
     }
 }
-
 
 @Composable
 private fun EmailListItem(
